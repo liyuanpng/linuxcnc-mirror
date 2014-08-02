@@ -30,6 +30,8 @@ import sys
 whitelist_classes = set()
 id2f = {}
 
+exitval = 0
+
 for f in sys.argv[1:]:
     doc = ElementTree.parse(f)
     for node in doc.findall(".//object"):
@@ -38,7 +40,9 @@ for f in sys.argv[1:]:
         of = id2f.get(node_id, None)
         if of:
             if cls not in whitelist_classes:
-                print "%s:0: Uses id %r (first encountered in %s)" % (
+                print "%s:0: Error: Uses id %r (first encountered in %s)" % (
                         f, node_id, of)
+                exitval = 1
         else:
             id2f[node_id] = f
+raise SystemExit, exitval
