@@ -426,7 +426,6 @@ static int emcCommandSerialNumber = 100000;
 // default value for timeout, 0 means wait forever
 // use same timeout value as in tkemc & mini
 static double receiveTimeout = 1.;
-static double doneTimeout = 60.;
 
 static void quit(int sig)
 {
@@ -548,32 +547,6 @@ static int emcCommandWaitReceived(int serial_number)
 	end += EMC_COMMAND_DELAY;
     }
 
-    return -1;
-}
-
-static int emcCommandWaitDone(int serial_number)
-{
-    double end = 0.0;
-
-    // first get it there
-    if (0 != emcCommandWaitReceived(serial_number)) {
-	return -1;
-    }
-    // now wait until it, or subsequent command (e.g., abort) is done
-    while (end < doneTimeout) {
-	updateStatus();
-
-	if (emcStatus->status == RCS_DONE) {
-	    return 0;
-	}
-
-	if (emcStatus->status == RCS_ERROR) {
-	    return -1;
-	}
-
-	esleep(EMC_COMMAND_DELAY);
-	end += EMC_COMMAND_DELAY;
-    }
     return -1;
 }
 
