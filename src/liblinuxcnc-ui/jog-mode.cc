@@ -20,13 +20,13 @@
 #include "linuxcnc-ui-private.h"
 
 
-int lui_teleop_mode(lui_t *lui) {
+int lui_jog_mode_teleop(lui_t *lui) {
     EMC_TRAJ_SET_TELEOP_ENABLE msg;
     msg.enable = 1;
     return lui_send_nml_command_and_wait(lui, msg);
 }
 
-int lui_joint_mode(lui_t *lui) {
+int lui_jog_mode_joint(lui_t *lui) {
     EMC_TRAJ_SET_TELEOP_ENABLE msg;
     msg.enable = 0;
     return lui_send_nml_command_and_wait(lui, msg);
