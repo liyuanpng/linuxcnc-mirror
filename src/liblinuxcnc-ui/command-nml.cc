@@ -94,7 +94,7 @@ int lui_command_wait_done(lui_t *lui) {
     }
 
     gettimeofday(&now, NULL);
-    timeradd(&now, &lui->command_nml_receive_timeout, &end);
+    timeradd(&now, &lui->command_nml_done_timeout, &end);
 
     do {
         lui_status_nml_update(lui);
