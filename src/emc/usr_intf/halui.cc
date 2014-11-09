@@ -1531,10 +1531,10 @@ static void check_hal_changes()
 	lui_mode_mdi(lui);
 
     if (check_bit_changed(new_halui_data.mode_teleop, old_halui_data.mode_teleop) != 0)
-	lui_teleop_mode(lui);
+	lui_jog_mode_teleop(lui);
 
     if (check_bit_changed(new_halui_data.mode_joint, old_halui_data.mode_joint) != 0)
-	lui_joint_mode(lui);
+	lui_jog_mode_joint(lui);
 
     if (check_bit_changed(new_halui_data.mist_on, old_halui_data.mist_on) != 0)
 	lui_coolant_mist_on(lui);
