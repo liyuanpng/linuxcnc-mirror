@@ -371,7 +371,7 @@ LuiGetterSimple('axis_mask', 'int',
     'Axes are numbered starting with X=0 and in the order XYZ ABC UVW.\n'
     'Possible return values include 7 for an XYZ machine,\n'
     '5 for an XZ machine, etc.')
-LuiGetterSimple('motion_mode', 'lui_motion_mode_t', 'motion.traj.mode',
+LuiGetterSimple('traj_mode', 'lui_traj_mode_t', 'motion.traj.mode',
     'whether motions are planned in joint or world coordinates')
 LuiGetterSimple('enabled', 'bool', 'motion.traj.enabled',
     'whether the machine is enabled'
