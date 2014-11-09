@@ -958,23 +958,7 @@ static int sendTaskPlanInit()
 
 static int sendProgramOpen(char *program)
 {
-  EMC_TASK_PLAN_OPEN emc_task_plan_open_msg;
-
-  // first put in auto mode if it's not
-  if (EMC_TASK_MODE_AUTO != emcStatus->task.mode) {
-    // send a request to go to auto mode
-    sendAuto();
-  }
-
-  // wait for any previous one to go out
-  if (0 != emcCommandWaitDone(emcCommandSerialNumber)) {
-    printError("error executing command\n");
-    return -1;
-  }
-
-  emc_task_plan_open_msg.serial_number = ++emcCommandSerialNumber;
-  strcpy(emc_task_plan_open_msg.file, program);
-  emcCommandBuffer->write(emc_task_plan_open_msg);
+  lui_program_open(lui, program);
 
   // now clear out our stored version of the program, in case
   // the file contents have changed but the name is the same
@@ -984,30 +968,15 @@ static int sendProgramOpen(char *program)
 }
 
 // line in program to run from; set it in GUI when user clicks on a line,
-// and pass it in calls to sendProgramRun(). sendProgramRun() won't use
-// this directly.
+// and pass it in calls to lui_program_run().
 static int programStartLine = 0;
 static int programStartLineLast = 0;
 
 static int sendProgramRun(int line)
 {
-  EMC_TASK_PLAN_RUN emc_task_plan_run_msg;
-
-  // first reopen program if it's not open
-  if (0 == emcStatus->task.file[0]) {
-    // send a request to open last one
-    sendProgramOpen(lastProgramFile);
-
-    // wait for command to go out
-    if (0 != emcCommandWaitDone(emcCommandSerialNumber)) {
-      printError("error executing command\n");
-      return -1;
-    }
+  if (lui_program_run(lui, line) != 0) {
+    return -1;
   }
-
-  emc_task_plan_run_msg.serial_number = ++emcCommandSerialNumber;
-  emc_task_plan_run_msg.line = line;
-  emcCommandBuffer->write(emc_task_plan_run_msg);
 
   programStartLineLast = programStartLine;
   programStartLine = 0;
@@ -1017,22 +986,9 @@ static int sendProgramRun(int line)
 
 static int sendProgramStep()
 {
-  EMC_TASK_PLAN_STEP emc_task_plan_step_msg;
-
-  // first reopen program if it's not open
-  if (0 == emcStatus->task.file[0]) {
-    // send a request to open last one
-    sendProgramOpen(lastProgramFile);
-
-    // wait for command to go out
-    if (0 != emcCommandWaitDone(emcCommandSerialNumber)) {
-      printError("error executing command\n");
-      return -1;
-    }
+  if (lui_program_step(lui) != 0) {
+    return -1;
   }
-
-  emc_task_plan_step_msg.serial_number = ++emcCommandSerialNumber;
-  emcCommandBuffer->write(emc_task_plan_step_msg);
 
   programStartLineLast = programStartLine;
   programStartLine = 0;
