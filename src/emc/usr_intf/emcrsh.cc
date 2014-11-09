@@ -1155,8 +1155,8 @@ static cmdResponseType setTeleopEnable(char *s, connectionRecType *context)
 {
    switch (checkOnOff(s)) {
      case -1: return rtStandardError;
-     case 0: lui_teleop_mode(lui); break;
-     case 1: lui_joint_mode(lui); break;
+     case 0: lui_jog_mode_teleop(lui); break;
+     case 1: lui_jog_mode_joint(lui); break;
      }
    return rtNoError;
 }
