@@ -1015,26 +1015,6 @@ static int sendProgramRun(int line)
   return 0;
 }
 
-static int sendProgramPause()
-{
-  EMC_TASK_PLAN_PAUSE emc_task_plan_pause_msg;
-
-  emc_task_plan_pause_msg.serial_number = ++emcCommandSerialNumber;
-  emcCommandBuffer->write(emc_task_plan_pause_msg);
-
-  return 0;
-}
-
-static int sendProgramResume()
-{
-  EMC_TASK_PLAN_RESUME emc_task_plan_resume_msg;
-
-  emc_task_plan_resume_msg.serial_number = ++emcCommandSerialNumber;
-  emcCommandBuffer->write(emc_task_plan_resume_msg);
-
-  return 0;
-}
-
 static int sendProgramStep()
 {
   EMC_TASK_PLAN_STEP emc_task_plan_step_msg;
@@ -2228,12 +2208,12 @@ static void programRunCB(Widget w, XtPointer client_data, XtPointer call_data)
 
 static void programPauseCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
-  sendProgramPause();
+  lui_program_pause(lui);
 }
 
 static void programResumeCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
-  sendProgramResume();
+  lui_program_resume(lui);
 }
 
 static void programStepCB(Widget w, XtPointer client_data, XtPointer call_data)
@@ -2824,7 +2804,7 @@ static void keyPressAction(unsigned int state, unsigned int keycode)
     switch (state) {
     case XKEY_EVENT_STATE_NONE:
     case XKEY_EVENT_STATE_SHIFT:
-      sendProgramPause();
+      lui_program_pause(lui);
       break;
     }
     break;
@@ -2833,7 +2813,7 @@ static void keyPressAction(unsigned int state, unsigned int keycode)
     switch (state) {
     case XKEY_EVENT_STATE_NONE:
     case XKEY_EVENT_STATE_SHIFT:
-      sendProgramResume();
+      lui_program_resume(lui);
       break;
     }
     break;
