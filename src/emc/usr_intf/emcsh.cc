@@ -3078,9 +3078,9 @@ int emc_teleop_enable(ClientData clientdata,
 	    return TCL_ERROR;
 	}
 	if (enable) {
-            lui_teleop_mode(lui);
+            lui_jog_mode_teleop(lui);
         } else {
-            lui_joint_mode(lui);
+            lui_jog_mode_joint(lui);
         }
     }
 
