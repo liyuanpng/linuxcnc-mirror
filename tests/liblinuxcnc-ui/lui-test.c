@@ -96,7 +96,7 @@ void verify_traj_mode(lui_t *lui, lui_traj_mode_t expected_traj_mode) {
     actual_traj_mode = lui_get_traj_mode(lui);
     printf("traj mode is %d\n", actual_traj_mode);
     fatal_if(actual_traj_mode != expected_traj_mode,
-        "Error: expected motion mode %d, got motion mode %d\n", expected_traj_mode, actual_traj_mode);
+        "Error: expected traj mode %d, got traj mode %d\n", expected_traj_mode, actual_traj_mode);
 }
 
 
