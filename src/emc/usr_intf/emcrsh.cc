@@ -1082,7 +1082,7 @@ static cmdResponseType setOpen(char *s, connectionRecType *context)
     return rtStandardError;
   }
 
-  if (sendProgramOpen(context->progName) != 0) return rtStandardError;
+  if (lui_program_open(lui, context->progName) != 0) return rtStandardError;
   return rtNoError;
 }
 
@@ -1091,12 +1091,12 @@ static cmdResponseType setRun(char *s, connectionRecType *context)
   int lineNo;
   
   if (s == NULL) // run from beginning
-    if (sendProgramRun(0) != 0) return rtStandardError;
+    if (lui_program_run(lui, 0) != 0) return rtStandardError;
     else ;
   else
     { // run from line number
       if (sscanf(s, "%d", &lineNo) <= 0) return rtStandardError;
-      if (sendProgramRun(lineNo) != 0) return rtStandardError;
+      if (lui_program_run(lui, lineNo) != 0) return rtStandardError;
     }
   return rtNoError;
 }
@@ -1115,7 +1115,7 @@ static cmdResponseType setResume(char *s, connectionRecType *context)
 
 static cmdResponseType setStep(char *s, connectionRecType *context)
 {
-  if (sendProgramStep() != 0) return rtStandardError;
+  if (lui_program_step(lui) != 0) return rtStandardError;
   return rtNoError;
 }
 
@@ -1937,7 +1937,7 @@ static cmdResponseType getProgramLine(char *s, connectionRecType *context)
   const char *pProgramLine = "PROGRAM_LINE %d";
   int lineNo;
   
-  if ((programStartLine< 0) || (emcStatus->task.readLine < programStartLine))
+  if ((lui_program_get_line(lui)< 0) || (emcStatus->task.readLine < lui_program_get_line(lui)))
     lineNo = emcStatus->task.readLine;
   else
     if (emcStatus->task.currentLine > 0)
@@ -2787,7 +2787,6 @@ static void initMain()
     error_string[LINELEN-1] = 0;
     operator_text_string[LINELEN-1] = 0;
     operator_display_string[LINELEN-1] = 0;
-    programStartLine = 0;
 }
 
 static void usage(char* pname) {
