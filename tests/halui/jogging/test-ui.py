@@ -11,6 +11,14 @@ import os
 timeout = 1.0
 
 
+program_start = time.time()
+
+def log(msg):
+    delta_t = time.time() - program_start;
+    print "%.3f: %s" % (delta_t, msg)
+    sys.stdout.flush()
+
+
 class LinuxcncError(Exception):
     pass
 #    def __init__(self, value):
@@ -157,16 +165,13 @@ class LinuxcncControl:
 
 
 def introspect(h):
-    #print "joint.0.select =", h['joint-0-select']
-    #print "joint.0.selected =", h['joint-0-selected']
-    #print "joint.0.position =", h['joint-0-position']
     os.system("halcmd show pin halui")
     os.system("halcmd show pin python-ui")
     os.system("halcmd show sig")
 
 
 def select_joint(name):
-    print "    selecting", name
+    log("    selecting %s" % name)
 
     h[name + '-select'] = 1
     start = time.time()
@@ -174,7 +179,7 @@ def select_joint(name):
         time.sleep(0.1)
 
     if h[name + '-selected'] == 0:
-        print "failed to select", name, "in halui"
+        log("failed to select %s in halui" % name)
         introspect(h)
         sys.exit(1)
 
@@ -183,7 +188,7 @@ def select_joint(name):
 
 def jog_minus(name, target):
     start_position = h[name + '-position']
-    print "    jogging", name, "negative: to %.3f" % (target)
+    log("    jogging %s negative: to %.3f" % (name, target))
 
     h['jog-selected-minus'] = 1
 
@@ -192,20 +197,20 @@ def jog_minus(name, target):
         time.sleep(0.1)
 
     if h[name + '-position'] > target:
-        print name, "failed to jog", name, "to", target
+        log("failed to jog %s to %.3f" % (name, target))
         introspect(h)
         return False
 
     h['jog-selected-minus'] = 0
 
-    print "    jogged %s negative past target %.3f" % (name, target)
+    log("    jogged %s negative past target %.3f" % (name, target))
 
     return True
 
 
 def jog_plus(name, target):
     start_position = h[name + '-position']
-    print "    jogging %s positive: to %.3f" % (name, target)
+    log("    jogging %s positive: to %.3f" % (name, target))
 
     h['jog-selected-plus'] = 1
 
@@ -214,13 +219,13 @@ def jog_plus(name, target):
         time.sleep(0.1)
 
     if h[name + '-position'] < target:
-        print name, "failed to jog", name, "to", target
+        log("failed to jog %s to %.3f" % (name, target))
         introspect(h)
         return False
 
     h['jog-selected-plus'] = 0
 
-    print "    jogged %s positive past target %.3f)" % (name, target)
+    log("    jogged %s positive past target %.3f" % (name, target))
 
     return True
 
@@ -234,9 +239,10 @@ def wait_for_joint_to_stop(joint_number):
         time.sleep(0.1)
         new_pos = h[pos_pin]
         if new_pos == prev_pos:
+            log("joint %d stopped jogging" % joint_number)
             return
         prev_pos = new_pos
-    print "Error: joint didn't stop jogging!"
+    log("Error: joint didn't stop jogging!")
     sys.exit(1)
 
 
@@ -249,7 +255,7 @@ def jog_joint(joint_number, target):
 
     name = 'joint-%d' % joint_number
 
-    print "jogging", name, "to", target
+    log("jogging %s to %.3f" % (name, target))
     select_joint(name)
 
     if h[name + '-position'] > target:
@@ -261,11 +267,11 @@ def jog_joint(joint_number, target):
         pin_name = 'joint-%d-position' % j
         if j == joint_number:
             if joint[j] == h[pin_name]:
-                print "joint", str(j), "didn't move but should have!"
+                log("joint %d didn't move but should have!" % j)
                 success = False
         else:
             if joint[j] != h[pin_name]:
-                print "joint", str(j), "moved from %.3f to %.3f but shouldnt have!" % (joint[j], h[pin_name])
+                log("joint %d moved from %.3f to %.3f but shouldnt have!" % (j, joint[j], h[pin_name]))
                 success = False
 
     wait_for_joint_to_stop(joint_number)
