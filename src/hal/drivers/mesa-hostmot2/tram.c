@@ -168,8 +168,8 @@ int hm2_tram_read(hostmot2_t *hm2) {
 }
 
 
+static rtapi_u32 tram_write_iteration = 0;
 int hm2_tram_write(hostmot2_t *hm2) {
-    static rtapi_u32 tram_write_iteration = 0;
     struct rtapi_list_head *ptr;
 
     rtapi_list_for_each(ptr, &hm2->tram_write_entries) {
@@ -181,9 +181,14 @@ int hm2_tram_write(hostmot2_t *hm2) {
         }
     }
 
+    return 0;
+}
+
+int hm2_finish_write(hostmot2_t *hm2) {
     if (!hm2->llio->queue_write(hm2->llio, 0, NULL, -1)) {
-        HM2_ERR("TRAM write error finishing write! iter=%u)\n",
+        HM2_ERR("write error finishing write! iter=%u)\n",
             tram_write_iteration);
+        return -EIO;
     }
     tram_write_iteration ++;
 
